@@ -9,4 +9,5 @@ export {
   fsPath,
   Observable,
   Subject,
+  inquirer,
 } from 'command-interface';

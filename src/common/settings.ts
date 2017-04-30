@@ -1,31 +1,17 @@
 import * as constants from './constants';
 import { fsPath, log, file } from './libs';
+import { ISettings, ITemplate } from '../types';
 
 
 export interface IIndexYaml {
   templateDirs: string[];
 }
-
-
-
 export interface ITemplateYaml {
   name: string;
   folder: string;
   variables: { [key: string]: string };
 }
 
-export interface ITemplate {
-  dir: string;
-  name: string;
-  folder: string;
-  variables: { [key: string]: string };
-}
-
-
-export interface ISettings {
-  dir: string;
-  templates: ITemplate[];
-}
 
 
 

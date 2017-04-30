@@ -8,6 +8,7 @@
     "new": "./bin-cli"
   },
   "scripts": {
+    "example": "node lib/index",
     "test": "sh sh/test.sh",
     "tdd": "yarn run test -- --reporter min --watch",
     "lint": "node node_modules/tslint/bin/tslint 'src/**/*.ts{,x}' --format verbose",

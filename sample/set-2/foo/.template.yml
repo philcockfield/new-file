@@ -1,1 +1,4 @@
 name: Foo
+folder: NAME
+variables:
+  NAME: Name

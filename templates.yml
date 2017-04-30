@@ -1,3 +1,4 @@
 templateDirs:
-  - sample/*/
+  - sample/set-1/*/
+  - sample/set-2/*/
 

@@ -72,13 +72,18 @@ async function loadTemplates(dirs: string[]): Promise<ITemplate[]> {
 
 async function loadTemplate(dir: string): Promise<ITemplate | undefined> {
   const tmplPath = fsPath.join(dir, constants.CONFIG_FILE_TEMPLATE);
-  const yaml = await file.yaml<ITemplateYaml>(tmplPath);
-  return {
-    dir,
-    name: yaml.name,
-    folder: yaml.folder || 'NAME',
-    variables: yaml.variables || {},
-  };
+  try {
+    const yaml = await file.yaml<ITemplateYaml>(tmplPath);
+    return {
+      dir,
+      name: yaml.name,
+      folder: yaml.folder || 'NAME',
+      variables: yaml.variables || {},
+    };
+  } catch (error) {
+    log.warn.yellow(`WARNING: Could not load template in folder '${tmplPath}'`)
+    return;
+  }
 }
 
 

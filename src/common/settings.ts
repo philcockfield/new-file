@@ -45,7 +45,7 @@ export async function loadSettings(): Promise<ISettings | undefined> {
   const dir = fsPath.dirname(path);
   const settings: ISettings = {
     dir,
-    templates: []
+    templates: [],
   };
   for (const pattern of yaml.templateDirs) {
     const dirs = await file.glob(fsPath.join(dir, pattern));
@@ -66,7 +66,7 @@ async function loadTemplates(dirs: string[]): Promise<ITemplate[]> {
       result.push(tmpl);
     }
   }
-  return result
+  return result;
 }
 
 
@@ -81,7 +81,7 @@ async function loadTemplate(dir: string): Promise<ITemplate | undefined> {
       variables: yaml.variables || {},
     };
   } catch (error) {
-    log.warn.yellow(`WARNING: Could not load template in folder '${tmplPath}'`)
+    log.warn.yellow(`WARNING: Could not load template in folder '${tmplPath}'`);
     return;
   }
 }

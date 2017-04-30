@@ -44,8 +44,8 @@ export async function ls(options: IOptions = {}) {
     templates.add(
       log.cyan(tmpl.name),
       log.magenta(files.length),
-      log.gray(tmpl.dir)
-    )
+      log.gray(tmpl.dir),
+    );
   }
   templates.log();
 

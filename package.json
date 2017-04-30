@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "__GITHUB_URL__"
+    "url": "https://github.com/philcockfield/new-tmpl"
   },
-  "license": "UNLICENSED"
+  "license": "MIT"
 }

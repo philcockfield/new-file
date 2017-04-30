@@ -1,0 +1,6 @@
+name: Node Module (NPM)
+folder: NAME
+variables:
+  NAME: Module name
+  DESCRIPTION: Description
+  GITHUB_URL: Github URL

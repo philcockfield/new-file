@@ -1,0 +1,30 @@
+{
+  "name": "__NAME__",
+  "version": "1.0.0",
+  "description": "__DESCRIPTION__",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "scripts": {
+    "ui": "./node_modules/@kadira/storybook/dist/server/index.js -p 3030 -c ./.storybook -s ./assets",
+    "start": "node .",
+    "watch": "nodemon . -e js --ignore src",
+    "test": "sh sh/test.sh",
+    "tdd": "yarn run test -- --reporter min --watch",
+    "lint": "tslint 'src/**/*.ts{,x}' --format verbose",
+    "build:typescript": "rm -rf ./lib && tsc",
+    "build": "yarn run build:typescript",
+    "prepublish": "yarn run lint && yarn test && yarn run build"
+  },
+  "dependencies": {
+    "@tdb/util": "^1.0.72"
+  },
+  "devDependencies": {
+    "@tdb/ui.test": "^2.0.4",
+    "@tdb/typescript": "2.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "__GITHUB_URL__"
+  },
+  "license": "UNLICENSED"
+}

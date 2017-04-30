@@ -1,4 +1,12 @@
-import * as R from 'ramda';
-
-export { R };
-export { log, table } from 'command-interface';
+export {
+  R,
+  moment,
+  debounce,
+  log,
+  table,
+  file,
+  fs,
+  fsPath,
+  Observable,
+  Subject,
+} from 'command-interface';

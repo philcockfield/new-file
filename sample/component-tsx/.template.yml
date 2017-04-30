@@ -1,0 +1,6 @@
+name: React Component (TSX)
+folder: NAME
+variables:
+  NAME: Component name
+  DESCRIPTION: Description
+  NAMESPACE: Storybook namespace

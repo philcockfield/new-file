@@ -1,0 +1,35 @@
+{
+  "name": "new-tmpl",
+  "version": "1.0.0",
+  "description": "Simple file templates.",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "bin": {
+    "new": "./bin-cli"
+  },
+  "scripts": {
+    "test": "sh sh/test.sh",
+    "tdd": "yarn run test -- --reporter min --watch",
+    "lint": "node node_modules/tslint/bin/tslint 'src/**/*.ts{,x}' --format verbose",
+    "build": "rm -rf ./lib && node node_modules/typescript/bin/tsc",
+    "build:watch": "yarn run build -- --watch",
+    "prepublish": "yarn run lint && yarn test && yarn run build"
+  },
+  "dependencies": {
+    "command-interface": "^3.0.0",
+    "ramda": "^0.23.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.5.1",
+    "@types/mocha": "^2.2.41",
+    "@types/ramda": "^0.0.7",
+    "chai": "^3.5.0",
+    "js-typescript": "^2.3.1",
+    "mocha": "^3.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "__GITHUB_URL__"
+  },
+  "license": "UNLICENSED"
+}

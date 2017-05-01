@@ -2,9 +2,27 @@
 # yarn lockfile v1
 
 
+"@types/bluebird@*":
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.3.tgz#a2c28be02c0855f526e43785fa326f282402e290"
+
 "@types/chai@^3.5.1":
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-3.5.2.tgz#c11cd2817d3a401b7ba0f5a420f35c56139b1c1e"
+
+"@types/fs-extra-promise@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra-promise/-/fs-extra-promise-1.0.0.tgz#f55f5f22f78a9219621a3676fa2e2de1a3e81241"
+  dependencies:
+    "@types/bluebird" "*"
+    "@types/fs-extra" "*"
+    "@types/node" "*"
+
+"@types/fs-extra@*":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-2.1.0.tgz#8b350239c0455d92b8d3c626edac193860ff395f"
+  dependencies:
+    "@types/node" "*"
 
 "@types/inquirer@^0.0.34":
   version "0.0.34"
@@ -380,11 +398,13 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
     delayed-stream "~1.0.0"
 
 command-interface@^3.0.9:
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/command-interface/-/command-interface-3.0.11.tgz#6fad8a3fb35089ff2eb6810436ee56288b96ecba"
+  version "3.0.14"
+  resolved "https://registry.yarnpkg.com/command-interface/-/command-interface-3.0.14.tgz#da54778d379f367f4dbcb95b17a2cfb0a1c825ae"
   dependencies:
+    "@types/fs-extra-promise" "^1.0.0"
     "@types/inquirer" "^0.0.34"
     "@types/lodash.debounce" "^4.0.2"
+    "@types/ramda" "^0.0.7"
     chokidar "^1.6.1"
     cli-table "^0.3.1"
     execa "^0.6.3"

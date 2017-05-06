@@ -34,11 +34,13 @@ export async function ls(options: IOptions = {}) {
 
   // Print templates.
   log.info();
-  const templates = table([
+  const head = [
     log.gray('Template'),
     log.gray('Files'),
     log.gray('Folder'),
-  ]);
+  ];
+
+  const templates = table({ head });
   for (const tmpl of settings.templates) {
     const files = await file.glob(fsPath.join(tmpl.dir, '*'));
     templates.add([

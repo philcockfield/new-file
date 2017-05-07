@@ -5,22 +5,12 @@
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "ui": "./node_modules/@kadira/storybook/dist/server/index.js -p 3030 -c ./.storybook -s ./assets",
     "start": "node .",
-    "watch": "nodemon . -e js --ignore src",
-    "test": "sh sh/test.sh",
-    "tdd": "yarn run test -- --reporter min --watch",
-    "lint": "tslint 'src/**/*.ts{,x}' --format verbose",
-    "build:typescript": "rm -rf ./lib && tsc",
-    "build": "yarn run build:typescript",
-    "prepublish": "yarn run lint && yarn test && yarn run build"
+    "build": "rm -rf ./lib && tsc"
   },
-  "dependencies": {
-    "@tdb/util": "^1.0.72"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@tdb/ui.test": "^2.0.4",
-    "@tdb/typescript": "2.1.6"
+    "typescript": "^2.3.2"
   },
   "repository": {
     "type": "git",

@@ -145,7 +145,11 @@ const writeFile = async (template: ITemplate, variables: ITemplateVariables) => 
 
 
 const loadFiles = async (dir: string) => {
-  const files = await file.glob(`${dir}**`, { nodir: true });
+  const files = await file.glob(`${dir}**`, {
+    nodir: true,
+    dot: true,
+    ignore: '**/.DS_Store',
+  });
   return files.map((path) => {
     const name = fsPath.basename(path);
     return {

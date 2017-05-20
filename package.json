@@ -1,6 +1,6 @@
 {
   "name": "new-file",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Simple file templates.",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -17,7 +17,7 @@
     "prepublish": "yarn run lint && yarn test && yarn run build"
   },
   "dependencies": {
-    "command-interface": "^3.0.21",
+    "command-interface": "^3.0.23",
     "ramda": "^0.23.0"
   },
   "devDependencies": {

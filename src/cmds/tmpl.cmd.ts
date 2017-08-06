@@ -1,4 +1,5 @@
 import {
+  R,
   file,
   fs,
   fsPath,
@@ -145,17 +146,20 @@ const writeFile = async (template: ITemplate, variables: ITemplateVariables) => 
 
 
 const loadFiles = async (dir: string) => {
-  const files = await file.glob(`${dir}**`, {
-    nodir: true,
-    dot: true,
-    ignore: '**/.DS_Store',
-  });
-  return files.map((path) => {
-    const name = fsPath.basename(path);
-    return {
-      name,
-      path: path.substr(dir.length, path.length),
-      text: fs.readFileSync(path).toString(),
-    } as ITemplateFile;
-  });
+  const IGNORE = [
+    '.DS_Store',
+    '.template.yml',
+    '.template.yaml',
+  ];
+  const files = await file.glob(`${dir}**`, { nodir: true, dot: true });
+  return files
+    .filter((path) => R.none((ignore) => path.endsWith(ignore), IGNORE))
+    .map((path) => {
+      const name = fsPath.basename(path);
+      return {
+        name,
+        path: path.substr(dir.length, path.length),
+        text: fs.readFileSync(path).toString(),
+      } as ITemplateFile;
+    });
 };

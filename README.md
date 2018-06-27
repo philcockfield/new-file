@@ -2,8 +2,49 @@
 
 ![Title](https://cloud.githubusercontent.com/assets/185555/25560728/018b33d8-2db0-11e7-8f37-2e1f7ba6e8a6.png)
 
-Simple file templates.
+Super simple file templates, no fuss, just the way you like them.
+
+![Video](https://user-images.githubusercontent.com/185555/41954049-3f4e20f2-7a2d-11e8-92a1-8b6cc2a6950d.gif)
 
 ## Install
 
     npm install -g new-file
+
+## .template.yml
+
+Create folders that contain the files that make up your template.
+
+Include a `.template.yml` file within the folder defining the template and `variable` parameters to insert into the files:
+
+```yaml
+# .template.yml
+
+name: React Component (TSX)
+folder: NAME
+variables:
+  NAME: Component name
+  DESCRIPTION: Description
+  NAMESPACE: Storybook namespace
+```
+
+The folder `NAME` is taken as a parameter from the command line. Each variable key (eg `NAME`, `DESCRIPTION`, `NAMESPACE`) is inserted into the files where the variable name is surrunded by double `__`, eg:
+
+```tsx
+export class __NAME__ extends React.Component<I__NAME__Props, void> {
+  public render() {
+    return <div>__NAME__</div>;
+  }
+}
+```
+
+## .templates.yml
+
+Place an index in some containing folder where want the templates to be accessible via the command-line from, eg:
+
+```yaml
+# .templates.yml
+
+templateDirs:
+  - code/templates/*/
+  - helpers/my-other-templates/*/
+```

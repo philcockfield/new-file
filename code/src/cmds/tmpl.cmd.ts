@@ -19,29 +19,21 @@ export const alias = 't';
 export const description = 'Runs a generator template.';
 export const args = {};
 
-
 /**
  * CLI
  */
-export async function cmd(
-  args?: {
-    params: string[],
-    options: {},
-  },
-) {
+export async function cmd(args?: { params: string[]; options: {} }) {
   await create();
 }
 
-
-export interface IOptions { }
-
+export interface IOptions {}
 
 /**
  * Creates a new template
  */
 export async function create(options: IOptions = {}) {
   // Retrieve settings.
-  const settings = await loadSettings() as ISettings;
+  const settings = (await loadSettings()) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
     return;
@@ -65,22 +57,18 @@ export async function create(options: IOptions = {}) {
   }
 }
 
-
-
 async function promptForTemplate(templates: ITemplate[]) {
-  const choices = templates.map((item) => ({ name: item.name, value: item.dir }));
+  const choices = templates.map(item => ({ name: item.name, value: item.dir }));
   const confirm = {
     type: 'list',
     name: 'path',
     message: 'Select a template',
     choices,
   };
-  const { path } = (await inquirer.prompt(confirm));
-  const result = templates.find((item) => item.dir === path);
+  const { path } = (await inquirer.prompt(confirm)) as { path: string };
+  const result = templates.find(item => item.dir === path);
   return result;
 }
-
-
 
 async function promptForVariables(template: ITemplate) {
   const result = {} as any;
@@ -90,8 +78,6 @@ async function promptForVariables(template: ITemplate) {
   }
   return result;
 }
-
-
 
 async function promptForVariable(key: string, description: string) {
   description = description.replace(/\.$/, '');
@@ -103,12 +89,14 @@ async function promptForVariable(key: string, description: string) {
     name: 'value',
     message: description,
   };
-  const { value } = (await inquirer.prompt(confirm));
+  const { value } = (await inquirer.prompt(confirm)) as { value: string };
   return value;
 }
 
-
-const writeFile = async (template: ITemplate, variables: ITemplateVariables) => {
+const writeFile = async (
+  template: ITemplate,
+  variables: ITemplateVariables,
+) => {
   log.info();
   const folderName = variables[template.folder]
     ? variables[template.folder].replace(/\//g, '-')
@@ -126,11 +114,14 @@ const writeFile = async (template: ITemplate, variables: ITemplateVariables) => 
 
   const files = await loadFiles(template.dir);
 
-  files.forEach((file) => {
-    const filePath = file.path.replace(new RegExp(`__${template.folder}__`, 'g'), folderName);
+  files.forEach(file => {
+    const filePath = file.path.replace(
+      new RegExp(`__${template.folder}__`, 'g'),
+      folderName,
+    );
     const fullPath = fsPath.join(process.cwd(), folderName, filePath);
     let text = file.text;
-    Object.keys(variables).forEach((key) => {
+    Object.keys(variables).forEach(key => {
       const replaceWith = variables[key];
       if (replaceWith) {
         text = text.replace(new RegExp(`__${key}__`, 'g'), replaceWith);
@@ -144,22 +135,18 @@ const writeFile = async (template: ITemplate, variables: ITemplateVariables) => 
   return true;
 };
 
-
 const loadFiles = async (dir: string) => {
-  const IGNORE = [
-    '.DS_Store',
-    '.template.yml',
-    '.template.yaml',
-  ];
+  const IGNORE = ['.DS_Store', '.template.yml', '.template.yaml'];
   const files = await file.glob(`${dir}**`, { nodir: true, dot: true });
   return files
-    .filter((path) => R.none((ignore) => path.endsWith(ignore), IGNORE))
-    .map((path) => {
+    .filter(path => R.none(ignore => path.endsWith(ignore), IGNORE))
+    .map(path => {
       const name = fsPath.basename(path);
-      return {
+      const result: ITemplateFile = {
         name,
         path: path.substr(dir.length, path.length),
         text: fs.readFileSync(path).toString(),
-      } as ITemplateFile;
+      };
+      return result;
     });
 };

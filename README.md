@@ -3,9 +3,6 @@
 
 Simple file templates.
 
-
 ## Install
 
     npm install -g new-file
-
-

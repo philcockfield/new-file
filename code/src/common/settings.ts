@@ -2,7 +2,6 @@ import * as constants from './constants';
 import { fsPath, log, file } from './libs';
 import { ISettings, ITemplate } from '../types';
 
-
 export interface IIndexYaml {
   templateDirs: string[];
 }
@@ -12,20 +11,24 @@ export interface ITemplateYaml {
   variables: { [key: string]: string };
 }
 
-
-
-
 /**
  * Initializes the settings.
  */
 export async function loadSettings(): Promise<ISettings | undefined> {
   // Find the configuration YAML file.
-  const path = await file.findClosestAncestor(process.cwd(), constants.CONFIG_FILE_INDEX);
-  if (!path) { return; }
+  const path = await file.findClosestAncestor(
+    process.cwd(),
+    constants.CONFIG_FILE_INDEX,
+  );
+  if (!path) {
+    return;
+  }
 
   // Load the YAML.
   const yaml = await loadIndexYaml(path);
-  if (!yaml) { return; }
+  if (!yaml) {
+    return;
+  }
 
   // Load template dirs.
   const dir = fsPath.dirname(path);
@@ -35,14 +38,12 @@ export async function loadSettings(): Promise<ISettings | undefined> {
   };
   for (const pattern of yaml.templateDirs) {
     const dirs = await file.glob(fsPath.join(dir, pattern));
-    (await loadTemplates(dirs)).forEach((tmpl) => settings.templates.push(tmpl));
+    (await loadTemplates(dirs)).forEach(tmpl => settings.templates.push(tmpl));
   }
 
   // Finish up.
   return settings;
 }
-
-
 
 async function loadTemplates(dirs: string[]): Promise<ITemplate[]> {
   const result: ITemplate[] = [];
@@ -54,7 +55,6 @@ async function loadTemplates(dirs: string[]): Promise<ITemplate[]> {
   }
   return result;
 }
-
 
 async function loadTemplate(dir: string): Promise<ITemplate | undefined> {
   const tmplPath = fsPath.join(dir, constants.CONFIG_FILE_TEMPLATE);
@@ -71,7 +71,6 @@ async function loadTemplate(dir: string): Promise<ITemplate | undefined> {
     return;
   }
 }
-
 
 /**
  * Finds and loads the YAML configuration file.
@@ -91,4 +90,3 @@ async function loadIndexYaml(path: string) {
   }
   return;
 }
-

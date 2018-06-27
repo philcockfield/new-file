@@ -19,4 +19,3 @@ export interface ITemplateFile {
   path: string;
   text: string;
 }
-

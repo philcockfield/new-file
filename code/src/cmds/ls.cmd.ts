@@ -1,4 +1,11 @@
-import { constants, log, file, fsPath, table, loadSettings, ISettings } from '../common';
+import {
+  constants,
+  log,
+  file,
+  fsPath,
+  loadSettings,
+  ISettings,
+} from '../common';
 
 export const name = 'ls';
 export const alias = 'l';
@@ -8,25 +15,18 @@ export const args = {};
 /**
  * CLI command.
  */
-export async function cmd(
-  args?: {
-    params: string[],
-    options: {},
-  },
-) {
+export async function cmd(args?: { params: string[]; options: {} }) {
   await ls({});
 }
 
-
-export interface IOptions { }
-
+export interface IOptions {}
 
 /**
  * List modules in dependency order.
  */
 export async function ls(options: IOptions = {}) {
   // Retrieve settings.
-  const settings = await loadSettings() as ISettings;
+  const settings = (await loadSettings()) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
     return;
@@ -34,13 +34,9 @@ export async function ls(options: IOptions = {}) {
 
   // Print templates.
   log.info();
-  const head = [
-    log.gray('Template'),
-    log.gray('Files'),
-    log.gray('Folder'),
-  ];
+  const head = [log.gray('Template'), log.gray('Files'), log.gray('Folder')];
 
-  const templates = table({ head });
+  const templates = log.table({ head });
   for (const tmpl of settings.templates) {
     const files = await file.glob(fsPath.join(tmpl.dir, '*'));
     templates.add([

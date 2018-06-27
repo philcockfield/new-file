@@ -1,6 +1,5 @@
 import { log } from './libs';
 
-
 /**
  * Common styling for a command title.
  */

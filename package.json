@@ -1,6 +1,6 @@
 {
   "name": "new-file",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Simple file templates.",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -9,24 +9,20 @@
   },
   "scripts": {
     "example": "node lib/index",
-    "test": "sh sh/test.sh",
-    "tdd": "yarn run test -- --reporter min --watch",
-    "lint": "node node_modules/tslint/bin/tslint 'src/**/*.ts{,x}' --format verbose",
-    "build": "rm -rf ./lib && node node_modules/typescript/bin/tsc",
-    "build:watch": "yarn run build -- --watch",
-    "prepublish": "yarn run lint && yarn test && yarn run build"
+    "test": "sh ./sh/test.sh",
+    "tdd": "yarn run test --reporter min --watch",
+    "lint": "sh ./sh/lint.sh",
+    "build": "sh ./sh/build.sh",
+    "prepare": "yarn run lint && yarn test && yarn run build"
   },
   "dependencies": {
-    "command-interface": "^3.0.23",
-    "ramda": "^0.23.0"
+    "command-interface": "4.0.0",
+    "ramda": "0.25.0"
   },
   "devDependencies": {
-    "@types/chai": "^3.5.1",
-    "@types/mocha": "^2.2.41",
-    "@types/ramda": "^0.0.7",
-    "chai": "^3.5.0",
-    "js-typescript": "^2.3.1",
-    "mocha": "^3.3.0"
+    "@tdb/test": "1.1.6",
+    "@tdb/typescript": "2.8.1",
+    "@types/ramda": "0.25.34"
   },
   "repository": {
     "type": "git",

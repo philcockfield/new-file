@@ -3,7 +3,6 @@ export {
   moment,
   debounce,
   log,
-  table,
   file,
   fs,
   fsPath,

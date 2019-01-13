@@ -32,7 +32,7 @@ export async function cmd(args?: { params: string[]; options: {} }) {
  */
 export async function create(options: ICreateOptions = {}) {
   // Retrieve settings.
-  const { settingsPath } = options;
+  const { settingsPath, targetDir } = options;
   const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
@@ -48,7 +48,7 @@ export async function create(options: ICreateOptions = {}) {
 
   // Copy the template.
   const variables = await promptForVariables(template);
-  const success = await writeFile(template, variables);
+  const success = await writeFile({ template, variables, dir: targetDir });
 
   // Finish up.
   log.info();
@@ -93,15 +93,19 @@ async function promptForVariable(key: string, description: string) {
   return value;
 }
 
-const writeFile = async (
-  template: ITemplate,
-  variables: ITemplateVariables,
-) => {
+const writeFile = async (args: {
+  template: ITemplate;
+  variables: ITemplateVariables;
+  dir?: string;
+}) => {
+  const { template, variables } = args;
+
   log.info();
   const folderName = variables[template.folder]
     ? variables[template.folder].replace(/\//g, '-')
     : 'Unnamed';
-  const dir = fsPath.join(process.cwd(), folderName);
+  const dir = args.dir || fsPath.join(process.cwd(), folderName);
+
   if (fs.existsSync(dir)) {
     log.info.yellow(`⚠️  WARNING: Directory already exists.`);
     log.info.yellow(`    - Directory: ${log.magenta(dir)}`);

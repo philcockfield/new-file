@@ -1,18 +1,17 @@
 import {
-  R,
+  constants,
   file,
   fs,
   fsPath,
-  log,
-  constants,
-  loadSettings,
+  ICreateOptions,
+  inquirer,
   ISettings,
   ITemplate,
-  ITemplateVariables,
   ITemplateFile,
-  inquirer,
-  printTitle,
-  ICreateOptions,
+  ITemplateVariables,
+  loadSettings,
+  log,
+  R,
 } from '../common';
 
 export const name = 'tmpl';
@@ -47,7 +46,6 @@ export async function create(options: ICreateOptions = {}) {
   if (!template) {
     return;
   }
-  printTitle(`Create from template: ${log.magenta(template.name)}`);
 
   // Copy the template.
   const variables = await promptForVariables(template);

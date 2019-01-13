@@ -16,17 +16,12 @@
     "prepare": "yarn run lint && yarn test && yarn run build"
   },
   "dependencies": {
-    "command-interface": "4.0.0",
-    "ramda": "0.25.0"
+    "command-interface": "4.0.6"
   },
   "devDependencies": {
-    "@tdb/test": "1.1.6",
-    "@tdb/typescript": "2.8.1",
-    "@types/ramda": "0.25.34"
+    "@tdb/test": "1.2.10",
+    "@tdb/typescript": "3.2.5"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/philcockfield/new-file"
-  },
+  "repository": "https://github.com/philcockfield/new-file",
   "license": "MIT"
 }

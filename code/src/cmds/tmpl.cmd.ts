@@ -12,6 +12,7 @@ import {
   ITemplateFile,
   inquirer,
   printTitle,
+  ICreateOptions,
 } from '../common';
 
 export const name = 'tmpl';
@@ -26,12 +27,10 @@ export async function cmd(args?: { params: string[]; options: {} }) {
   await create();
 }
 
-export interface IOptions {}
-
 /**
  * Creates a new template
  */
-export async function create(options: IOptions = {}) {
+export async function create(options: ICreateOptions = {}) {
   // Retrieve settings.
   const settings = (await loadSettings()) as ISettings;
   if (!settings) {

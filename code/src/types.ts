@@ -19,3 +19,5 @@ export interface ITemplateFile {
   path: string;
   text: string;
 }
+
+export interface ICreateOptions {}

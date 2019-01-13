@@ -1,2 +1,2 @@
-// API Entry Point.
-export const NAME = 'new-file';
+export * from './types';
+export { create } from './cmds/tmpl.cmd';

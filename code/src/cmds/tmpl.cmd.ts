@@ -148,9 +148,9 @@ const writeFiles = async (args: {
     });
 
     if (beforeWrite) {
-      console.log('-------------------------------------------');
+      // console.log('-------------------------------------------');
     }
-    console.log('beforeWrite', beforeWrite);
+    // console.log('beforeWrite', beforeWrite);
 
     fs.ensureDirSync(fsPath.dirname(fullPath));
     fs.writeFileSync(fullPath, text);

@@ -12,6 +12,8 @@ import {
   loadSettings,
   log,
   R,
+  BeforeWriteFile,
+  IWriteFile,
 } from '../common';
 
 export const name = 'tmpl';
@@ -31,7 +33,7 @@ export async function cmd(args?: { params: string[]; options: {} }) {
  */
 export async function create(options: ICreateOptions = {}) {
   // Retrieve settings.
-  const { settingsPath, targetDir, templateName } = options;
+  const { settingsPath, targetDir, templateName, beforeWrite } = options;
   const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
@@ -49,7 +51,12 @@ export async function create(options: ICreateOptions = {}) {
 
   // Copy the template.
   const variables = await promptForVariables(template);
-  const success = await writeFile({ template, variables, dir: targetDir });
+  const success = await writeFiles({
+    template,
+    variables,
+    dir: targetDir,
+    beforeWrite,
+  });
 
   // Finish up.
   log.info();
@@ -98,12 +105,13 @@ async function promptForVariable(key: string, description: string) {
   return value;
 }
 
-const writeFile = async (args: {
+const writeFiles = async (args: {
   template: ITemplate;
   variables: ITemplateVariables;
   dir?: string;
+  beforeWrite?: BeforeWriteFile;
 }) => {
-  const { template, variables } = args;
+  const { template, variables, beforeWrite } = args;
 
   log.info();
   const folderName = variables[template.folder]
@@ -138,6 +146,12 @@ const writeFile = async (args: {
         text = text.replace(new RegExp(`__${key}__`, 'g'), replaceWith);
       }
     });
+
+    if (beforeWrite) {
+      console.log('-------------------------------------------');
+    }
+    console.log('beforeWrite', beforeWrite);
+
     fs.ensureDirSync(fsPath.dirname(fullPath));
     fs.writeFileSync(fullPath, text);
     log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);

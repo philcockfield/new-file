@@ -24,4 +24,12 @@ export interface ICreateOptions {
   settingsPath?: string;
   targetDir?: string;
   templateName?: string;
+  beforeWrite?: BeforeWriteFile;
 }
+
+export type BeforeWriteFile = (e: IWriteFile) => IWriteFile | undefined;
+
+export type IWriteFile = {
+  path: string;
+  text: string;
+};

@@ -9,7 +9,7 @@ import {
 
 export const name = 'ls';
 export const alias = 'l';
-export const description = 'Lists the available templates.';
+export const description = 'Lists the available templates |||.';
 export const args = {};
 
 /**

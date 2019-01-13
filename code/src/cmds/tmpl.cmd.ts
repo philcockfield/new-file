@@ -32,7 +32,8 @@ export async function cmd(args?: { params: string[]; options: {} }) {
  */
 export async function create(options: ICreateOptions = {}) {
   // Retrieve settings.
-  const settings = (await loadSettings()) as ISettings;
+  const { settingsPath } = options;
+  const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
     return;
@@ -43,7 +44,7 @@ export async function create(options: ICreateOptions = {}) {
   if (!template) {
     return;
   }
-  printTitle(`✏️  Create from Template: ${log.magenta(template.name)}`);
+  printTitle(`Create from template: ${log.magenta(template.name)}`);
 
   // Copy the template.
   const variables = await promptForVariables(template);

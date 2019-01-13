@@ -20,4 +20,6 @@ export interface ITemplateFile {
   text: string;
 }
 
-export interface ICreateOptions {}
+export interface ICreateOptions {
+  settingsPath?: string;
+}

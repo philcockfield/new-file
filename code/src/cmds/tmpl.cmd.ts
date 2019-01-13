@@ -110,7 +110,8 @@ const writeFile = async (args: {
     ? variables[template.folder].replace(/\//g, '-')
     : 'Unnamed';
 
-  const dir = fsPath.join(args.dir || process.cwd(), folderName);
+  const parentDir = args.dir || process.cwd();
+  const dir = fsPath.join(parentDir, folderName);
 
   if (fs.existsSync(dir)) {
     log.info.yellow(`⚠️  WARNING: Directory already exists.`);
@@ -120,7 +121,7 @@ const writeFile = async (args: {
   }
 
   fs.ensureDirSync(dir);
-  log.info.blue('Creating:');
+  log.info.gray('Creating:');
 
   const files = await loadFiles(template.dir);
 
@@ -139,10 +140,17 @@ const writeFile = async (args: {
     });
     fs.ensureDirSync(fsPath.dirname(fullPath));
     fs.writeFileSync(fullPath, text);
-    log.info.blue(`  ${fullPath}`);
+    log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);
   });
 
   return true;
+};
+
+const formatPath = (path: string, rootDir: string) => {
+  let dir = fsPath.dirname(path);
+  dir = dir.substr(rootDir.length);
+  const file = fsPath.basename(path);
+  return `${dir}/${log.cyan(file)}`;
 };
 
 const loadFiles = async (dir: string) => {

@@ -14,12 +14,16 @@ export interface ITemplateYaml {
 /**
  * Initializes the settings.
  */
-export async function loadSettings(): Promise<ISettings | undefined> {
+export async function loadSettings(
+  args: { path?: string } = {},
+): Promise<ISettings | undefined> {
   // Find the configuration YAML file.
-  const path = await file.findClosestAncestor(
-    process.cwd(),
-    constants.CONFIG_FILE_INDEX,
-  );
+  const path =
+    args.path ||
+    (await file.findClosestAncestor(
+      process.cwd(),
+      constants.CONFIG_FILE_INDEX,
+    ));
   if (!path) {
     return;
   }

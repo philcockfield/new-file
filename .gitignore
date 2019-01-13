@@ -6,6 +6,7 @@
 .vscode
 .temp
 
+/tmp
 /dist
 /lib
 /TEMP.md

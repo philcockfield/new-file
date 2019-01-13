@@ -1,18 +1,19 @@
 import {
-  R,
+  constants,
   file,
   fs,
   fsPath,
-  log,
-  constants,
-  loadSettings,
+  ICreateOptions,
+  inquirer,
   ISettings,
   ITemplate,
-  ITemplateVariables,
   ITemplateFile,
-  inquirer,
-  printTitle,
-  ICreateOptions,
+  ITemplateVariables,
+  loadSettings,
+  log,
+  R,
+  BeforeWriteFile,
+  IWriteFile,
 } from '../common';
 
 export const name = 'tmpl';
@@ -32,22 +33,30 @@ export async function cmd(args?: { params: string[]; options: {} }) {
  */
 export async function create(options: ICreateOptions = {}) {
   // Retrieve settings.
-  const settings = (await loadSettings()) as ISettings;
+  const { settingsPath, targetDir, templateName, beforeWrite } = options;
+  const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
     return;
   }
 
   // Prompt for the template to use.
-  const template = await promptForTemplate(settings.templates);
+  const templates = settings.templates;
+  const template = templateName
+    ? findTemplateByName(templateName, templates)
+    : await promptForTemplate(templates);
   if (!template) {
     return;
   }
-  printTitle(`✏️  Create from Template: ${log.magenta(template.name)}`);
 
   // Copy the template.
   const variables = await promptForVariables(template);
-  const success = await writeFile(template, variables);
+  const success = await writeFiles({
+    template,
+    variables,
+    dir: targetDir,
+    beforeWrite,
+  });
 
   // Finish up.
   log.info();
@@ -67,6 +76,10 @@ async function promptForTemplate(templates: ITemplate[]) {
   const { path } = (await inquirer.prompt(confirm)) as { path: string };
   const result = templates.find(item => item.dir === path);
   return result;
+}
+
+function findTemplateByName(name: string, templates: ITemplate[]) {
+  return templates.find(item => item.name === name);
 }
 
 async function promptForVariables(template: ITemplate) {
@@ -92,15 +105,22 @@ async function promptForVariable(key: string, description: string) {
   return value;
 }
 
-const writeFile = async (
-  template: ITemplate,
-  variables: ITemplateVariables,
-) => {
+const writeFiles = async (args: {
+  template: ITemplate;
+  variables: ITemplateVariables;
+  dir?: string;
+  beforeWrite?: BeforeWriteFile;
+}) => {
+  const { template, variables, beforeWrite } = args;
+
   log.info();
   const folderName = variables[template.folder]
     ? variables[template.folder].replace(/\//g, '-')
     : 'Unnamed';
-  const dir = fsPath.join(process.cwd(), folderName);
+
+  const parentDir = args.dir || process.cwd();
+  const dir = fsPath.join(parentDir, folderName);
+
   if (fs.existsSync(dir)) {
     log.info.yellow(`⚠️  WARNING: Directory already exists.`);
     log.info.yellow(`    - Directory: ${log.magenta(dir)}`);
@@ -109,34 +129,64 @@ const writeFile = async (
   }
 
   fs.ensureDirSync(dir);
-  log.info.blue('Creating:');
+  log.info.gray('Creating:');
 
   const files = await loadFiles(template.dir);
 
-  files.forEach(file => {
+  for (const file of files) {
     const filePath = file.path.replace(
       new RegExp(`__${template.folder}__`, 'g'),
       folderName,
     );
-    const fullPath = fsPath.join(process.cwd(), folderName, filePath);
+    let fullPath = fsPath.join(dir, filePath);
     let text = file.text;
+
+    // Replace template values.
     Object.keys(variables).forEach(key => {
       const replaceWith = variables[key];
       if (replaceWith) {
         text = text.replace(new RegExp(`__${key}__`, 'g'), replaceWith);
       }
     });
+
+    // Get any modifications to the file before writing.
+    if (beforeWrite) {
+      const e: IWriteFile = {
+        path: fullPath,
+        text,
+      };
+      const res = await beforeWrite(e);
+      if (res) {
+        let updates = e;
+        updates = typeof res === 'object' ? res : updates;
+        updates = typeof res === 'string' ? { ...updates, text: res } : updates;
+        fullPath = updates.path;
+        text = updates.text;
+      }
+    }
+
+    // Write the file.
     fs.ensureDirSync(fsPath.dirname(fullPath));
     fs.writeFileSync(fullPath, text);
-    log.info.blue(`  ${fullPath}`);
-  });
+
+    // Log details.
+    log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);
+  }
 
   return true;
 };
 
+const formatPath = (path: string, rootDir: string) => {
+  let dir = fsPath.dirname(path);
+  dir = dir.substr(rootDir.length);
+  const file = fsPath.basename(path);
+  return `${dir}/${log.cyan(file)}`;
+};
+
 const loadFiles = async (dir: string) => {
   const IGNORE = ['.DS_Store', '.template.yml', '.template.yaml'];
-  const files = await file.glob(`${dir}**`, { nodir: true, dot: true });
+  const glob = `${dir.replace(/\/$/, '')}/**`;
+  const files = await file.glob(glob, { nodir: true, dot: true });
   return files
     .filter(path => R.none(ignore => path.endsWith(ignore), IGNORE))
     .map(path => {

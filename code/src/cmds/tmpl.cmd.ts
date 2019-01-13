@@ -130,7 +130,7 @@ const writeFile = async (args: {
       new RegExp(`__${template.folder}__`, 'g'),
       folderName,
     );
-    const fullPath = fsPath.join(process.cwd(), folderName, filePath);
+    const fullPath = fsPath.join(dir, filePath);
     let text = file.text;
     Object.keys(variables).forEach(key => {
       const replaceWith = variables[key];

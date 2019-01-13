@@ -13,7 +13,7 @@ import {
   log,
   R,
   BeforeWriteFile,
-  IWriteFile,
+  // IWriteFile,
 } from '../common';
 
 export const name = 'tmpl';

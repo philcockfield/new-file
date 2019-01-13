@@ -111,7 +111,8 @@ const writeFile = async (args: {
   const folderName = variables[template.folder]
     ? variables[template.folder].replace(/\//g, '-')
     : 'Unnamed';
-  const dir = args.dir || fsPath.join(process.cwd(), folderName);
+
+  const dir = fsPath.join(args.dir || process.cwd(), folderName);
 
   if (fs.existsSync(dir)) {
     log.info.yellow(`⚠️  WARNING: Directory already exists.`);
@@ -148,7 +149,8 @@ const writeFile = async (args: {
 
 const loadFiles = async (dir: string) => {
   const IGNORE = ['.DS_Store', '.template.yml', '.template.yaml'];
-  const files = await file.glob(`${dir}**`, { nodir: true, dot: true });
+  const glob = `${dir.replace(/\/$/, '')}/**`;
+  const files = await file.glob(glob, { nodir: true, dot: true });
   return files
     .filter(path => R.none(ignore => path.endsWith(ignore), IGNORE))
     .map(path => {

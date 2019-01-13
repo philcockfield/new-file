@@ -32,7 +32,7 @@ export async function cmd(args?: { params: string[]; options: {} }) {
  */
 export async function create(options: ICreateOptions = {}) {
   // Retrieve settings.
-  const { settingsPath, targetDir } = options;
+  const { settingsPath, targetDir, templateName } = options;
   const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
     log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
@@ -40,7 +40,10 @@ export async function create(options: ICreateOptions = {}) {
   }
 
   // Prompt for the template to use.
-  const template = await promptForTemplate(settings.templates);
+  const templates = settings.templates;
+  const template = templateName
+    ? findTemplateByName(templateName, templates)
+    : await promptForTemplate(templates);
   if (!template) {
     return;
   }
@@ -68,6 +71,10 @@ async function promptForTemplate(templates: ITemplate[]) {
   const { path } = (await inquirer.prompt(confirm)) as { path: string };
   const result = templates.find(item => item.dir === path);
   return result;
+}
+
+function findTemplateByName(name: string, templates: ITemplate[]) {
+  return templates.find(item => item.name === name);
 }
 
 async function promptForVariables(template: ITemplate) {

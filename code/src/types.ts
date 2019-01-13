@@ -23,4 +23,5 @@ export interface ITemplateFile {
 export interface ICreateOptions {
   settingsPath?: string;
   targetDir?: string;
+  templateName?: string;
 }

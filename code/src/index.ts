@@ -1,2 +1,2 @@
-import command from 'command-interface';
-command(`${__dirname}/**/*.cmd.js`);
+// API Entry Point.
+export const NAME = 'new-file';

@@ -13,7 +13,7 @@ import {
   log,
   R,
   BeforeWriteFile,
-  // IWriteFile,
+  IWriteFile,
 } from '../common';
 
 export const name = 'tmpl';
@@ -133,13 +133,15 @@ const writeFiles = async (args: {
 
   const files = await loadFiles(template.dir);
 
-  files.forEach(file => {
+  for (const file of files) {
     const filePath = file.path.replace(
       new RegExp(`__${template.folder}__`, 'g'),
       folderName,
     );
-    const fullPath = fsPath.join(dir, filePath);
+    let fullPath = fsPath.join(dir, filePath);
     let text = file.text;
+
+    // Replace template values.
     Object.keys(variables).forEach(key => {
       const replaceWith = variables[key];
       if (replaceWith) {
@@ -147,15 +149,29 @@ const writeFiles = async (args: {
       }
     });
 
+    // Get any modifications to the file before writing.
     if (beforeWrite) {
-      // console.log('-------------------------------------------');
+      const e: IWriteFile = {
+        path: fullPath,
+        text,
+      };
+      const res = await beforeWrite(e);
+      if (res) {
+        let updates = e;
+        updates = typeof res === 'object' ? res : updates;
+        updates = typeof res === 'string' ? { ...updates, text: res } : updates;
+        fullPath = updates.path;
+        text = updates.text;
+      }
     }
-    // console.log('beforeWrite', beforeWrite);
 
+    // Write the file.
     fs.ensureDirSync(fsPath.dirname(fullPath));
     fs.writeFileSync(fullPath, text);
+
+    // Log details.
     log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);
-  });
+  }
 
   return true;
 };

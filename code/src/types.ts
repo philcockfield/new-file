@@ -27,7 +27,9 @@ export interface ICreateOptions {
   beforeWrite?: BeforeWriteFile;
 }
 
-export type BeforeWriteFile = (e: IWriteFile) => IWriteFile | undefined;
+export type BeforeWriteFile = (
+  e: IWriteFile,
+) => Promise<string | IWriteFile | undefined | void>;
 
 export type IWriteFile = {
   path: string;

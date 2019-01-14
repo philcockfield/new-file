@@ -9,6 +9,7 @@ export interface ITemplateYaml {
   name: string;
   folder: string;
   variables: { [key: string]: string };
+  install: boolean;
 }
 
 /**
@@ -69,6 +70,7 @@ async function loadTemplate(dir: string): Promise<ITemplate | undefined> {
       name: yaml.name,
       folder: yaml.folder || 'NAME',
       variables: yaml.variables || {},
+      install: Boolean(yaml.install),
     };
   } catch (error) {
     log.warn.yellow(`WARNING: Could not load template in folder '${tmplPath}'`);

@@ -10,4 +10,5 @@ export {
   inquirer,
   exec,
   listr,
+  IListrTask,
 } from 'command-interface';

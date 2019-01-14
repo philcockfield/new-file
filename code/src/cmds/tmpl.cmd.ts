@@ -14,6 +14,10 @@ import {
   R,
   BeforeWriteFile,
   IWriteFile,
+  exec,
+  listr,
+  IListrTask,
+  isYarnInstalled,
 } from '../common';
 
 export const name = 'tmpl';
@@ -51,18 +55,32 @@ export async function create(options: ICreateOptions = {}) {
 
   // Copy the template.
   const variables = await promptForVariables(template);
-  const success = await writeFiles({
+  const write = await writeFiles({
     template,
     variables,
-    dir: targetDir,
+    targetDir,
     beforeWrite,
   });
+  if (!write.success) {
+    log.error(`😥  Failed to write template files.`);
+    return { success: false };
+  }
+
+  // Run `npm install` if requested.
+  if (template.install) {
+    log.info();
+    const res = await npmInstall(write.dir);
+    if (!res.success) {
+      log.info.yellow(`😥  Failed to install NPM modules.`);
+      log.error(res.error.message);
+      return { success: false };
+    }
+  }
 
   // Finish up.
   log.info();
-  if (success) {
-    log.info.green(`✨✨  Done`);
-  }
+  log.info.green(`✨✨  Done`);
+  return { success: true };
 }
 
 async function promptForTemplate(templates: ITemplate[]) {
@@ -108,7 +126,7 @@ async function promptForVariable(key: string, description: string) {
 const writeFiles = async (args: {
   template: ITemplate;
   variables: ITemplateVariables;
-  dir?: string;
+  targetDir?: string;
   beforeWrite?: BeforeWriteFile;
 }) => {
   const { template, variables, beforeWrite } = args;
@@ -118,14 +136,14 @@ const writeFiles = async (args: {
     ? variables[template.folder].replace(/\//g, '-')
     : 'Unnamed';
 
-  const parentDir = args.dir || process.cwd();
+  const parentDir = args.targetDir || process.cwd();
   const dir = fsPath.join(parentDir, folderName);
 
   if (fs.existsSync(dir)) {
     log.info.yellow(`⚠️  WARNING: Directory already exists.`);
     log.info.yellow(`    - Directory: ${log.magenta(dir)}`);
     log.info.yellow(`    - Template not created.`);
-    return false;
+    return { success: false, dir };
   }
 
   fs.ensureDirSync(dir);
@@ -173,7 +191,7 @@ const writeFiles = async (args: {
     log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);
   }
 
-  return true;
+  return { success: true, dir };
 };
 
 const formatPath = (path: string, rootDir: string) => {
@@ -199,3 +217,19 @@ const loadFiles = async (dir: string) => {
       return result;
     });
 };
+
+async function npmInstall(dir: string) {
+  const cmd = (await isYarnInstalled()) ? 'yarn install' : 'npm install';
+  const task: IListrTask = {
+    title: cmd,
+    task: async () => {
+      await exec.run(`cd ${dir} && ${cmd}`, { silent: true });
+    },
+  };
+  try {
+    await listr([task]).run();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}

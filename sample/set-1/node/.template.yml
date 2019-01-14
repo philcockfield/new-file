@@ -1,5 +1,6 @@
 name: Node Module (NPM)
 folder: NAME
+install: true
 variables:
   NAME: Module name
   DESCRIPTION: Description

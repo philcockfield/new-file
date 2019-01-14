@@ -32,16 +32,27 @@ export async function cmd(args?: { params: string[]; options: {} }) {
   await create();
 }
 
+export type ICreateResponse = {
+  success: boolean;
+  dir: string;
+  error?: Error;
+};
+
 /**
  * Creates a new template
  */
-export async function create(options: ICreateOptions = {}) {
+export async function create(
+  options: ICreateOptions = {},
+): Promise<ICreateResponse> {
+  // const result = { success: true, e };
+
   // Retrieve settings.
   const { settingsPath, targetDir, templateName, beforeWrite } = options;
   const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
-    log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
-    return;
+    const error = new Error(constants.CONFIG_NOT_FOUND_ERROR);
+    log.warn.yellow(error.message);
+    return { success: false, dir: '', error };
   }
 
   // Prompt for the template to use.
@@ -50,7 +61,8 @@ export async function create(options: ICreateOptions = {}) {
     ? findTemplateByName(templateName, templates)
     : await promptForTemplate(templates);
   if (!template) {
-    return;
+    const error = new Error(`Template 'templateName' not found.`);
+    return { success: false, dir: '', error };
   }
 
   // Copy the template.
@@ -61,9 +73,11 @@ export async function create(options: ICreateOptions = {}) {
     targetDir,
     beforeWrite,
   });
+  const dir = write.dir;
   if (!write.success) {
-    log.error(`😥  Failed to write template files.`);
-    return { success: false };
+    const error = new Error('Failed to write template files.');
+    log.error(`😥  ${error.message}`);
+    return { success: false, dir, error };
   }
 
   // Run `npm install` if requested.
@@ -72,15 +86,14 @@ export async function create(options: ICreateOptions = {}) {
     const res = await npmInstall(write.dir);
     if (!res.success) {
       log.info.yellow(`😥  Failed to install NPM modules.`);
-      log.error(res.error.message);
-      return { success: false };
+      return { success: false, dir, error: res.error };
     }
   }
 
   // Finish up.
   log.info();
   log.info.green(`✨✨  Done`);
-  return { success: true };
+  return { success: true, dir };
 }
 
 async function promptForTemplate(templates: ITemplate[]) {

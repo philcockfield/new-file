@@ -76,7 +76,7 @@ export async function create(
   const dir = write.dir;
   if (!write.success) {
     const error = new Error('Failed to write template files.');
-    log.error(`😥  ${error.message}`);
+    log.info.yellow(`\n😥  ${error.message}`);
     return { success: false, dir, error };
   }
 
@@ -85,7 +85,7 @@ export async function create(
     log.info();
     const res = await npmInstall(write.dir);
     if (!res.success) {
-      log.info.yellow(`😥  Failed to install NPM modules.`);
+      log.info.yellow(`\n😥  Failed to install NPM modules.`);
       return { success: false, dir, error: res.error };
     }
   }

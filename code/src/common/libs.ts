@@ -8,4 +8,7 @@ export {
   Observable,
   Subject,
   inquirer,
+  exec,
+  listr,
+  IListrTask,
 } from 'command-interface';

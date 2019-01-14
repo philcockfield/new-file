@@ -14,6 +14,10 @@ import {
   R,
   BeforeWriteFile,
   IWriteFile,
+  exec,
+  listr,
+  IListrTask,
+  isYarnInstalled,
 } from '../common';
 
 export const name = 'tmpl';
@@ -28,16 +32,27 @@ export async function cmd(args?: { params: string[]; options: {} }) {
   await create();
 }
 
+export type ICreateResponse = {
+  success: boolean;
+  dir: string;
+  error?: Error;
+};
+
 /**
  * Creates a new template
  */
-export async function create(options: ICreateOptions = {}) {
+export async function create(
+  options: ICreateOptions = {},
+): Promise<ICreateResponse> {
+  // const result = { success: true, e };
+
   // Retrieve settings.
   const { settingsPath, targetDir, templateName, beforeWrite } = options;
   const settings = (await loadSettings({ path: settingsPath })) as ISettings;
   if (!settings) {
-    log.warn.yellow(constants.CONFIG_NOT_FOUND_ERROR);
-    return;
+    const error = new Error(constants.CONFIG_NOT_FOUND_ERROR);
+    log.warn.yellow(error.message);
+    return { success: false, dir: '', error };
   }
 
   // Prompt for the template to use.
@@ -46,23 +61,39 @@ export async function create(options: ICreateOptions = {}) {
     ? findTemplateByName(templateName, templates)
     : await promptForTemplate(templates);
   if (!template) {
-    return;
+    const error = new Error(`Template 'templateName' not found.`);
+    return { success: false, dir: '', error };
   }
 
   // Copy the template.
   const variables = await promptForVariables(template);
-  const success = await writeFiles({
+  const write = await writeFiles({
     template,
     variables,
-    dir: targetDir,
+    targetDir,
     beforeWrite,
   });
+  const dir = write.dir;
+  if (!write.success) {
+    const error = new Error('Failed to write template files.');
+    log.error(`😥  ${error.message}`);
+    return { success: false, dir, error };
+  }
+
+  // Run `npm install` if requested.
+  if (template.install) {
+    log.info();
+    const res = await npmInstall(write.dir);
+    if (!res.success) {
+      log.info.yellow(`😥  Failed to install NPM modules.`);
+      return { success: false, dir, error: res.error };
+    }
+  }
 
   // Finish up.
   log.info();
-  if (success) {
-    log.info.green(`✨✨  Done`);
-  }
+  log.info.green(`✨✨  Done`);
+  return { success: true, dir };
 }
 
 async function promptForTemplate(templates: ITemplate[]) {
@@ -108,7 +139,7 @@ async function promptForVariable(key: string, description: string) {
 const writeFiles = async (args: {
   template: ITemplate;
   variables: ITemplateVariables;
-  dir?: string;
+  targetDir?: string;
   beforeWrite?: BeforeWriteFile;
 }) => {
   const { template, variables, beforeWrite } = args;
@@ -118,14 +149,14 @@ const writeFiles = async (args: {
     ? variables[template.folder].replace(/\//g, '-')
     : 'Unnamed';
 
-  const parentDir = args.dir || process.cwd();
+  const parentDir = args.targetDir || process.cwd();
   const dir = fsPath.join(parentDir, folderName);
 
   if (fs.existsSync(dir)) {
     log.info.yellow(`⚠️  WARNING: Directory already exists.`);
     log.info.yellow(`    - Directory: ${log.magenta(dir)}`);
     log.info.yellow(`    - Template not created.`);
-    return false;
+    return { success: false, dir };
   }
 
   fs.ensureDirSync(dir);
@@ -173,7 +204,7 @@ const writeFiles = async (args: {
     log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);
   }
 
-  return true;
+  return { success: true, dir };
 };
 
 const formatPath = (path: string, rootDir: string) => {
@@ -199,3 +230,19 @@ const loadFiles = async (dir: string) => {
       return result;
     });
 };
+
+async function npmInstall(dir: string) {
+  const cmd = (await isYarnInstalled()) ? 'yarn install' : 'npm install';
+  const task: IListrTask = {
+    title: cmd,
+    task: async () => {
+      await exec.run(`cd ${dir} && ${cmd}`, { silent: true });
+    },
+  };
+  try {
+    await listr([task]).run();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error };
+  }
+}

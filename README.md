@@ -21,6 +21,7 @@ Include a `.template.yml` file within the folder defining the template and `vari
 
 name: React Component (TSX)
 folder: NAME
+install: true # Optionally `{yarn|npm} install` on the folder (default: false).
 variables:
   NAME: Component name
   DESCRIPTION: Description
@@ -30,7 +31,7 @@ variables:
 The folder `NAME` is taken as a parameter from the command line. Each variable key (eg `NAME`, `DESCRIPTION`, `NAMESPACE`) is inserted into the files where the variable name is surrunded by double `__`, eg:
 
 ```tsx
-export class __NAME__ extends React.Component<I__NAME__Props, void> {
+export class __NAME__ extends React.Component<I__NAME__Props> {
   public render() {
     return <div>__NAME__</div>;
   }

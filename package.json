@@ -1,6 +1,6 @@
 {
   "name": "new-file",
-  "version": "1.1.25",
+  "version": "1.1.27",
   "description": "Simple file templates.",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "example": "node lib/cli",
+    "clean": "sh ./sh/clean.sh",
     "test": "sh ./sh/test.sh",
     "tdd": "yarn run test --reporter min --watch",
     "lint": "sh ./sh/lint.sh",
@@ -16,7 +17,7 @@
     "prepare": "yarn run lint && yarn test && yarn run build"
   },
   "dependencies": {
-    "command-interface": "4.0.6"
+    "command-interface": "4.0.7"
   },
   "devDependencies": {
     "@tdb/test": "1.2.10",

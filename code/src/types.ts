@@ -7,6 +7,7 @@ export interface ITemplate {
   dir: string;
   name: string;
   folder: string;
+  install: boolean;
   variables: ITemplateVariables;
 }
 

@@ -43,7 +43,9 @@ export async function loadSettings(
   };
   for (const pattern of yaml.templateDirs) {
     const dirs = await file.glob(fsPath.join(dir, pattern));
-    (await loadTemplates(dirs)).forEach(tmpl => settings.templates.push(tmpl));
+    (await loadTemplates(dirs))
+      .filter(tmpl => Boolean(tmpl))
+      .forEach(tmpl => settings.templates.push(tmpl));
   }
 
   // Finish up.
@@ -73,7 +75,6 @@ async function loadTemplate(dir: string): Promise<ITemplate | undefined> {
       install: Boolean(yaml.install),
     };
   } catch (error) {
-    log.warn.yellow(`WARNING: Could not load template in folder '${tmplPath}'`);
     return;
   }
 }

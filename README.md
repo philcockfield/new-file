@@ -10,6 +10,7 @@ Super simple file templates, no fuss, just the way you like them.
 
     npm install -g new-file
 
+
 ## .template.yml
 
 Create folders that contain the files that make up your template.
@@ -49,3 +50,24 @@ templateDirs:
   - code/templates/*/
   - helpers/my-other-templates/*/
 ```
+
+
+## package.json
+If you are creating a template that contains a `package.json` file within it, you can use the special `__LATEST__` version value for dependencies.  The generator will retrieve the latest version of the module from NPM and insert it.
+
+
+```json
+{
+  "name": "__NAME__",
+  "version": "0.0.0",
+  "dependencies": {
+    "ramda": "__LATEST__"
+  },
+  "devDependencies": {
+    "electron": "__LATEST__",
+  },
+}
+```
+
+NOTE: If you are already using `LATEST` as a variable name, your variable name will override this feature.
+

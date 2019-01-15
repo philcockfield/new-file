@@ -17,7 +17,8 @@
     "prepare": "yarn run lint && yarn test && yarn run build"
   },
   "dependencies": {
-    "command-interface": "4.0.7"
+    "command-interface": "4.0.7",
+    "isbinaryfile": "^4.0.0"
   },
   "devDependencies": {
     "@tdb/test": "1.2.10",

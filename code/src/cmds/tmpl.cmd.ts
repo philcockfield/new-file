@@ -19,6 +19,7 @@ import {
   IListrTask,
   isYarnInstalled,
   npm,
+  isBinaryFile,
 } from '../common';
 
 export const name = 'tmpl';
@@ -166,6 +167,7 @@ const writeFiles = async (args: {
   const files = await loadFiles(template.dir);
 
   for (const file of files) {
+    const { isBinary } = file;
     const filePath = file.path.replace(
       new RegExp(`__${template.folder}__`, 'g'),
       folderName,
@@ -174,12 +176,14 @@ const writeFiles = async (args: {
     let text = file.text;
 
     // Replace template values.
-    Object.keys(variables).forEach(key => {
-      const replaceWith = variables[key];
-      if (replaceWith) {
-        text = text.replace(new RegExp(`__${key}__`, 'g'), replaceWith);
-      }
-    });
+    if (!isBinary) {
+      Object.keys(variables).forEach(key => {
+        const replaceWith = variables[key];
+        if (replaceWith) {
+          text = text.replace(new RegExp(`__${key}__`, 'g'), replaceWith);
+        }
+      });
+    }
 
     // Prepare known file types.
     if (file.name === 'package.json') {
@@ -188,10 +192,7 @@ const writeFiles = async (args: {
 
     // Get any modifications to the file before writing.
     if (beforeWrite) {
-      const e: IWriteFile = {
-        path: fullPath,
-        text,
-      };
+      const e: IWriteFile = { path: fullPath, text, isBinary };
       const res = await beforeWrite(e);
       if (res) {
         let updates = e;
@@ -203,8 +204,8 @@ const writeFiles = async (args: {
     }
 
     // Write the file.
-    fs.ensureDirSync(fsPath.dirname(fullPath));
-    fs.writeFileSync(fullPath, text);
+    await fs.ensureDir(fsPath.dirname(fullPath));
+    await fs.writeFile(fullPath, isBinary ? file.buffer : text);
 
     // Log details.
     log.info.gray(`- ${formatPath(fullPath, parentDir).substr(1)}`);
@@ -224,17 +225,22 @@ const loadFiles = async (dir: string) => {
   const IGNORE = ['.DS_Store', '.template.yml', '.template.yaml'];
   const glob = `${dir.replace(/\/$/, '')}/**`;
   const files = await file.glob(glob, { nodir: true, dot: true });
-  return files
+  const wait = files
     .filter(path => R.none(ignore => path.endsWith(ignore), IGNORE))
-    .map(path => {
+    .map(async path => {
       const name = fsPath.basename(path);
+      const isBinary = await isBinaryFile(path);
+      const buffer = await fs.readFile(path);
       const result: ITemplateFile = {
         name,
         path: path.substr(dir.length, path.length),
-        text: fs.readFileSync(path).toString(),
+        text: isBinary ? '' : buffer.toString(),
+        isBinary,
+        buffer,
       };
       return result;
     });
+  return Promise.all(wait);
 };
 
 async function npmInstall(dir: string) {

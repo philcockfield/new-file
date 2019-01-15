@@ -1,0 +1,4 @@
+name: Assets
+folder: NAME
+variables:
+  NAME: Name

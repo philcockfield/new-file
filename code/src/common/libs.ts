@@ -12,3 +12,5 @@ export {
   listr,
   IListrTask,
 } from 'command-interface';
+
+export { isBinaryFile } from 'isbinaryfile';

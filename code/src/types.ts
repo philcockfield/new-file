@@ -19,6 +19,8 @@ export interface ITemplateFile {
   name: string;
   path: string;
   text: string;
+  isBinary: boolean;
+  buffer: Buffer;
 }
 
 export interface ICreateOptions {
@@ -35,4 +37,5 @@ export type BeforeWriteFile = (
 export type IWriteFile = {
   path: string;
   text: string;
+  isBinary: boolean;
 };

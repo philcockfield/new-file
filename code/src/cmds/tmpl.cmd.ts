@@ -18,6 +18,7 @@ import {
   listr,
   IListrTask,
   isYarnInstalled,
+  npm,
 } from '../common';
 
 export const name = 'tmpl';
@@ -179,6 +180,11 @@ const writeFiles = async (args: {
         text = text.replace(new RegExp(`__${key}__`, 'g'), replaceWith);
       }
     });
+
+    // Prepare known file types.
+    if (file.name === 'package.json') {
+      text = await npm.toLatestVersions(text);
+    }
 
     // Get any modifications to the file before writing.
     if (beforeWrite) {

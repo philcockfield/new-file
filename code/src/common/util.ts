@@ -1,4 +1,7 @@
 import { log, exec } from './libs';
+import * as npm from './util.npm';
+
+export { npm };
 
 /**
  * Common styling for a command title.

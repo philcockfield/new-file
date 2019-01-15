@@ -6,9 +6,9 @@
 .vscode
 .temp
 
+lib
 /tmp
 /dist
-/lib
 /TEMP.md
 
 node_modules

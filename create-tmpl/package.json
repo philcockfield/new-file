@@ -1,0 +1,31 @@
+{
+  "name": "create-tmpl",
+  "version": "0.0.0",
+  "description": "Intergalatic template generator.",
+  "main": "./lib/server/server.next.js",
+  "types": "./lib/index.d.ts",
+  "bin": {
+    "create-tmpl": "./lib/bin/entry.js"
+  },
+  "scripts": {
+    "start": "node .",
+    "test": "sh ./node_modules/@tdb/test/sh/test.sh",
+    "tdd": "yarn run test --reporter min --watch",
+    "lint": "sh ./node_modules/@tdb/typescript/sh/lint.sh $@",
+    "build": "sh ./node_modules/@tdb/typescript/sh/build.sh $@",
+    "prepare": "yarn run build && yarn run lint && yarn test"
+  },
+  "dependencies": {
+    "@tdb/util": "1.9.22",
+    "yargs": "12.0.5"
+  },
+  "devDependencies": {
+    "@tdb/test": "1.2.10",
+    "@tdb/typescript": "3.2.5",
+    "@types/yargs": "12.0.5"
+  },
+  "files": [
+    "**/*"
+  ],
+  "license": "MIT"
+}

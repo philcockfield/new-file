@@ -1,0 +1,9 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+# create-tmpl
+Intergalatic template generator (using [new-file](https://github.com/philcockfield/new-file)).
+
+```
+yarn create tmpl
+```
+

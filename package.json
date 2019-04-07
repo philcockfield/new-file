@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "command-interface": "4.0.7",
-    "isbinaryfile": "^4.0.0"
+    "isbinaryfile": "4.0.0"
   },
   "devDependencies": {
-    "@tdb/test": "1.2.10",
-    "@tdb/typescript": "3.2.5"
+    "@tdb/test": "1.2.16",
+    "@tdb/typescript": "3.2.10"
   },
   "repository": "https://github.com/philcockfield/new-file",
   "license": "MIT"
